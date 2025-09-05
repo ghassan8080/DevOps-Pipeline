@@ -14,12 +14,12 @@ pipeline {
       }
     }
     
-    stage('Deploy Microservices') {
-      steps {
-        sh 'kubectl apply -f kubernetes/'
+  stage('Deploy Microservices') {
+    steps {
+    sh 'kubectl apply -f kubernetes/ -v=8'
       }
-    }
-    
+  }
+
     stage('Deploy Monitoring') {
       steps {
         sh 'kubectl apply -f kubernetes/prometheus-deployment.yaml'
