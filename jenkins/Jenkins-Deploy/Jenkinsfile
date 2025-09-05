@@ -43,8 +43,8 @@ pipeline {
 
     stage('Deploy Monitoring') {
       steps {
-        sh 'kubectl apply -f kubernetes/prometheus-deployment.yaml || echo "Failed to deploy prometheus"'
-        sh 'kubectl apply -f kubernetes/grafana-deployment.yaml || echo "Failed to deploy grafana"'
+        sh 'kubectl --kubeconfig=/var/snap/jenkins/4928/.kube/config apply -f kubernetes/prometheus-deployment.yaml || echo "Failed to deploy prometheus"'
+        sh 'kubectl --kubeconfig=/var/snap/jenkins/4928/.kube/config apply -f kubernetes/grafana-deployment.yaml || echo "Failed to deploy grafana"'
       }
     }
   }
