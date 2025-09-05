@@ -20,7 +20,7 @@ pipeline {
             rm minikube-linux-amd64
           fi
           echo "=== Starting Minikube ==="
-          minikube start --driver=docker
+          minikube start --driver=docker --force
           echo "=== Verifying Kubernetes connection ==="
           kubectl cluster-info
         '''
