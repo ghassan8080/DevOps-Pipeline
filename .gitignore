@@ -3,7 +3,8 @@
 *.tfstate.*
 .terraform/
 terraform.tfvars
-
+*.tfstate.backup
+.terraform.lock.hcl
 # Kubernetes
 *.kubeconfig
 
