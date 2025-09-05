@@ -3,7 +3,7 @@ pipeline {
   stages {
     stage('Delete EKS Cluster') {
       steps {
-        sh 'eksctl delete cluster --name microservice-cluster --region us-east-1'
+        sh 'eksctl delete cluster --name microservice-cluster --region us-east-2'
       }
     }
   }
