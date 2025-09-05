@@ -1,0 +1,16 @@
+pipeline {
+  agent any
+  stages {
+    stage('Deploy Microservices') {
+      steps {
+        sh 'kubectl apply -f kubernetes/'
+      }
+    }
+    stage('Deploy Monitoring') {
+      steps {
+        sh 'kubectl apply -f kubernetes/prometheus-deployment.yaml'
+        sh 'kubectl apply -f kubernetes/grafana-deployment.yaml'
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+- hosts: localhost
+  tasks:
+    - name: Build PHP-Apache Docker image
+      community.docker.docker_image:
+        build:
+          path: ../docker
+        name: php-apache
+
+    - name: Start docker-compose
+      community.docker.docker_compose:
+        project_src: ../docker
+        state: present

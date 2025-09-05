@@ -1,0 +1,11 @@
+pipeline {
+  agent any
+  stages {
+    stage('Create EKS Cluster') {
+      steps {
+        sh 'eksctl create cluster --name microservice-cluster --region us-east-1'
+        sh 'kubectl create namespace microservices'
+      }
+    }
+  }
+}
