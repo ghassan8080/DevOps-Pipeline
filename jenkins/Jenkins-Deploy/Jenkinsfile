@@ -1,11 +1,25 @@
+
 pipeline {
   agent any
   stages {
+    stage('Checkout') {
+      steps {
+        git url: 'https://github.com/ghassan8080/DevOps-Pipeline.git', branch: 'main'
+      }
+    }
+    
+    stage('Install kubectl') {
+      steps {
+        sh 'sudo snap install kubectl --classic'
+      }
+    }
+    
     stage('Deploy Microservices') {
       steps {
         sh 'kubectl apply -f kubernetes/'
       }
     }
+    
     stage('Deploy Monitoring') {
       steps {
         sh 'kubectl apply -f kubernetes/prometheus-deployment.yaml'
