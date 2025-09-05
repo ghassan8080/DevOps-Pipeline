@@ -10,7 +10,20 @@ pipeline {
     
     stage('Install kubectl') {
       steps {
-        sh 'sudo snap install kubectl --classic'
+        sh '''
+          sudo snap install kubectl --classic
+          echo "=== Checking if Minikube is installed ==="
+          if ! command -v minikube &> /dev/null; then
+            echo "Minikube not found, installing..."
+            curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+            sudo install minikube-linux-amd64 /usr/local/bin/minikube
+            rm minikube-linux-amd64
+          fi
+          echo "=== Starting Minikube ==="
+          minikube start --driver=docker
+          echo "=== Verifying Kubernetes connection ==="
+          kubectl cluster-info
+        '''
       }
     }
     
