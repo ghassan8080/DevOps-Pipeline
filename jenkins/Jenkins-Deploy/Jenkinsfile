@@ -1,4 +1,3 @@
-
 pipeline {
   agent any
   stages {
@@ -7,48 +6,42 @@ pipeline {
         git url: 'https://github.com/ghassan8080/DevOps-Pipeline.git', branch: 'main'
       }
     }
-    
-    stage('Install kubectl') {
+
+    stage('Verify Kubernetes Setup') {
       steps {
         sh '''
-          sudo snap install kubectl --classic
-          echo "=== Checking if Minikube is installed ==="
-          if ! command -v minikube &> /dev/null; then
-            echo "Minikube not found, installing..."
-            curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-            sudo install minikube-linux-amd64 /usr/local/bin/minikube
-            rm minikube-linux-amd64
-          fi
-          echo "=== Deleting existing Minikube cluster (if any) ==="
-          minikube delete
-          echo "=== Starting Minikube ==="
-          minikube start --driver=docker --force
-          echo "=== Waiting for Minikube to be ready ==="
-          minikube status --wait=true
+          echo "=== Verifying kubectl installation ==="
+          kubectl version --client
+          echo "=== Verifying Minikube installation ==="
+          minikube version
+          echo "=== Checking Minikube status ==="
+          minikube status
           echo "=== Verifying Kubernetes connection ==="
           kubectl cluster-info
+          echo "=== Listing available nodes ==="
+          kubectl get nodes
         '''
       }
     }
-    
-  stage('Deploy Microservices') {
-    steps {
-      sh '''
-        echo "=== Checking Kubernetes configuration ==="
-        kubectl config view
-        echo "=== Checking current context ==="
-        kubectl config current-context
-        echo "=== Listing available contexts ==="
-        kubectl config get-contexts
-        echo "=== Checking cluster connectivity ==="
-        kubectl cluster-info
-        echo "=== Listing files in kubernetes directory ==="
-        ls -la kubernetes/
-        echo "=== Applying Kubernetes manifests ==="
-        kubectl apply -f kubernetes/ -v=8
-      '''
+
+    stage('Deploy Microservices') {
+      steps {
+        sh '''
+          echo "=== Checking Kubernetes configuration ==="
+          kubectl config view
+          echo "=== Checking current context ==="
+          kubectl config current-context
+          echo "=== Listing available contexts ==="
+          kubectl config get-contexts
+          echo "=== Checking cluster connectivity ==="
+          kubectl cluster-info
+          echo "=== Listing files in kubernetes directory ==="
+          ls -la kubernetes/
+          echo "=== Applying Kubernetes manifests ==="
+          kubectl apply -f kubernetes/ -v=8
+        '''
+      }
     }
-  }
 
     stage('Deploy Monitoring') {
       steps {

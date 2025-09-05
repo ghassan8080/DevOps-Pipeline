@@ -52,6 +52,13 @@ tar -xzf eksctl_$(uname -s)_amd64.tar.gz
 sudo mv eksctl /usr/local/bin
 rm eksctl_$(uname -s)_amd64.tar.gz # Clean up
 
+# Install kubectl for Kubernetes cluster management
+echo "Installing kubectl..."
+curl -LO "https://dl.k8s.io/release/$(curl -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+chmod +x kubectl
+sudo mv kubectl /usr/local/bin/
+kubectl version --client
+
 # Install minikube for local Kubernetes clusters
 echo "Installing minikube..."
 curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
@@ -83,6 +90,9 @@ sudo snap services jenkins
 echo ""
 echo "eksctl Version:"
 eksctl version
+echo ""
+echo "kubectl Version:"
+kubectl version --client
 echo ""
 echo "minikube Version:"
 minikube version
