@@ -19,8 +19,12 @@ pipeline {
             sudo install minikube-linux-amd64 /usr/local/bin/minikube
             rm minikube-linux-amd64
           fi
+          echo "=== Deleting existing Minikube cluster (if any) ==="
+          minikube delete
           echo "=== Starting Minikube ==="
           minikube start --driver=docker --force
+          echo "=== Waiting for Minikube to be ready ==="
+          minikube status --wait=true
           echo "=== Verifying Kubernetes connection ==="
           kubectl cluster-info
         '''
