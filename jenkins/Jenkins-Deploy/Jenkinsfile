@@ -15,10 +15,16 @@ pipeline {
           echo "=== Verifying Minikube installation ==="
           minikube version
           echo "=== Checking Minikube status ==="
-          minikube status
+          minikube status || echo "Minikube status check failed, continuing..."
           echo "=== Verifying Kubernetes connection ==="
           kubectl cluster-info
           echo "=== Listing available nodes ==="
+          kubectl get nodes || echo "Cannot list nodes, checking if Minikube needs to be started"
+          echo "=== Starting Minikube if needed ==="
+          minikube status || minikube start --driver=docker
+          echo "=== Re-checking Kubernetes connection ==="
+          kubectl cluster-info
+          echo "=== Re-listing available nodes ==="
           kubectl get nodes
         '''
       }
