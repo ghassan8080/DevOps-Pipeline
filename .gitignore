@@ -1,0 +1,68 @@
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+terraform.tfvars
+
+# Kubernetes
+*.kubeconfig
+
+# Jenkins
+/secrets/
+*.log
+
+# Docker
+.dockerignore
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+temp/
+
+# Credentials and secrets
+*.pem
+*.key
+credentials.json
+.env
+.env.local
+
+# Build output
+dist/
+build/
+node_modules/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Ansible
+*.retry
+
+# Logs
+*.log
+logs/
+
+# Local files
+local/
+
+# Backup files
+*.backup
+*.bak
