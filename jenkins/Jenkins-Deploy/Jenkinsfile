@@ -15,15 +15,7 @@ pipeline {
           echo "=== Verifying Minikube installation ==="
           minikube version
           echo "=== Checking Minikube status ==="
-          minikube status || {
-            echo "Minikube status check failed, but it might still be running. Checking with kubectl..."
-            kubectl cluster-info || {
-              echo "Minikube is not running, starting it now..."
-              minikube start --driver=docker
-              echo "Waiting for Minikube to be ready..."
-              minikube status --wait=true
-            }
-          }
+          minikube status; true
           echo "=== Verifying Kubernetes connection ==="
           kubectl cluster-info
           echo "=== Listing available nodes ==="
