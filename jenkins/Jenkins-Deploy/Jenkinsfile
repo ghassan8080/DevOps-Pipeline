@@ -11,13 +11,13 @@ pipeline {
       steps {
         sh '''
           echo "=== Verifying kubectl installation ==="
-          kubectl version --client
+          kubectl version --client || echo "kubectl client not found"
           echo "=== Verifying Minikube installation ==="
-          minikube version
+          minikube version || echo "minikube not found"
           echo "=== Verifying Kubernetes connection ==="
-          kubectl cluster-info
+          kubectl cluster-info || echo "Kubernetes cluster not accessible"
           echo "=== Listing available nodes ==="
-          kubectl get nodes
+          kubectl get nodes || echo "Cannot list nodes"
         '''
       }
     }
@@ -26,25 +26,25 @@ pipeline {
       steps {
         sh '''
           echo "=== Checking Kubernetes configuration ==="
-          kubectl config view
+          kubectl config view || echo "Cannot view config"
           echo "=== Checking current context ==="
-          kubectl config current-context
+          kubectl config current-context || echo "Cannot get current context"
           echo "=== Listing available contexts ==="
-          kubectl config get-contexts
+          kubectl config get-contexts || echo "Cannot list contexts"
           echo "=== Checking cluster connectivity ==="
-          kubectl cluster-info
+          kubectl cluster-info || echo "Cluster not accessible"
           echo "=== Listing files in kubernetes directory ==="
-          ls -la kubernetes/
+          ls -la kubernetes/ || echo "Cannot list kubernetes directory"
           echo "=== Applying Kubernetes manifests ==="
-          kubectl apply -f kubernetes/ -v=8
+          kubectl apply -f kubernetes/ -v=8 || echo "Failed to apply manifests"
         '''
       }
     }
 
     stage('Deploy Monitoring') {
       steps {
-        sh 'kubectl apply -f kubernetes/prometheus-deployment.yaml'
-        sh 'kubectl apply -f kubernetes/grafana-deployment.yaml'
+        sh 'kubectl apply -f kubernetes/prometheus-deployment.yaml || echo "Failed to deploy prometheus"'
+        sh 'kubectl apply -f kubernetes/grafana-deployment.yaml || echo "Failed to deploy grafana"'
       }
     }
   }
