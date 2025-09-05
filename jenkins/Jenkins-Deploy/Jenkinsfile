@@ -14,8 +14,6 @@ pipeline {
           kubectl version --client
           echo "=== Verifying Minikube installation ==="
           minikube version
-          echo "=== Checking Minikube status ==="
-          minikube status; true
           echo "=== Verifying Kubernetes connection ==="
           kubectl cluster-info
           echo "=== Listing available nodes ==="
