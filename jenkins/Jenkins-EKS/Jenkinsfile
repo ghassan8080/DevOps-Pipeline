@@ -1,11 +1,88 @@
 pipeline {
   agent any
+  environment {
+    AWS_REGION = 'us-east-2'
+    CLUSTER_NAME = 'microservice-cluster'
+    NAMESPACE = 'microservices'
+  }
   stages {
+    stage('Checkout') {
+      steps {
+        git url: 'https://github.com/yourusername/DevOps-Pipeline.git', branch: 'main'
+      }
+    }
+    stage('Install Dependencies') {
+      steps {
+        sh '''
+          # Install eksctl if not already installed
+          if ! command -v eksctl &> /dev/null; then
+            curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+            sudo mv /tmp/eksctl /usr/local/bin
+          fi
+
+          # Install kubectl if not already installed
+          if ! command -v kubectl &> /dev/null; then
+            curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+            sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+          fi
+        '''
+      }
+    }
+    stage('Configure AWS Credentials') {
+      steps {
+        withAWS(credentials: 'aws-credentials', region: env.AWS_REGION) {
+          sh 'aws configure set default.region ${AWS_REGION}'
+        }
+      }
+    }
     stage('Create EKS Cluster') {
       steps {
-        sh 'eksctl create cluster --name microservice-cluster --region us-east-1'
-        sh 'kubectl create namespace microservices'
+        withAWS(credentials: 'aws-credentials', region: env.AWS_REGION) {
+          script {
+            try {
+              sh 'eksctl create cluster --name ${CLUSTER_NAME} --region ${AWS_REGION} --node-type t2.medium --nodes 2 --nodes-min 1 --nodes-max 3 --with-oidc --ssh-access --ssh-public-key ${SSH_KEY} --managed'
+            } catch (Exception e) {
+              echo "Cluster creation failed: ${e.getMessage()}"
+              currentBuild.result = 'FAILURE'
+              error('Cluster creation failed')
+            }
+          }
+        }
       }
+    }
+    stage('Update Kubeconfig') {
+      steps {
+        withAWS(credentials: 'aws-credentials', region: env.AWS_REGION) {
+          sh 'aws eks update-kubeconfig --name ${CLUSTER_NAME} --region ${AWS_REGION}'
+        }
+      }
+    }
+    stage('Create Namespace') {
+      steps {
+        script {
+          try {
+            sh 'kubectl create namespace ${NAMESPACE}'
+          } catch (Exception e) {
+            echo "Namespace creation failed or already exists: ${e.getMessage()}"
+          }
+        }
+      }
+    }
+    stage('Verify Cluster') {
+      steps {
+        sh '''
+          kubectl get nodes
+          kubectl get namespaces
+        '''
+      }
+    }
+  }
+  post {
+    success {
+      echo 'EKS Cluster created successfully!'
+    }
+    failure {
+      echo 'EKS Cluster creation failed!'
     }
   }
 }
