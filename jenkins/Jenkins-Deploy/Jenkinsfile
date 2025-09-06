@@ -22,6 +22,21 @@ pipeline {
       }
     }
 
+    stage('Clean Up Existing Resources') {
+      steps {
+        sh '''
+          echo "=== Removing existing deployments ==="
+          kubectl --kubeconfig=/var/snap/jenkins/4928/.kube/config delete deployment --all --ignore-not-found=true
+          echo "=== Removing existing pods ==="
+          kubectl --kubeconfig=/var/snap/jenkins/4928/.kube/config delete pod --all --ignore-not-found=true
+          echo "=== Removing existing services ==="
+          kubectl --kubeconfig=/var/snap/jenkins/4928/.kube/config delete service --all --ignore-not-found=true
+          echo "=== Waiting for resources to be terminated ==="
+          sleep 10
+        '''
+      }
+    }
+
     stage('Deploy Microservices') {
       steps {
         sh '''
