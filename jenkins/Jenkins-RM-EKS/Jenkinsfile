@@ -1,6 +1,17 @@
 pipeline {
   agent any
   stages {
+    stage('Install eksctl') {
+      steps {
+        sh '''
+          echo "=== Installing eksctl ==="
+          curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+          sudo mv /tmp/eksctl /usr/local/bin
+          eksctl version
+        '''
+      }
+    }
+    
     stage('Delete EKS Cluster') {
       steps {
         sh 'eksctl delete cluster --name microservice-cluster --region us-east-2'
